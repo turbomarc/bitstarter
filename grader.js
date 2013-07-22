@@ -20,10 +20,11 @@ References:
    - https://developer.mozilla.org/en-US/docs/JSON
    - https://developer.mozilla.org/en-US/docs/JSON#JSON_in_Firefox_2
 */
-
 var fs = require('fs');
 var program = require('commander');
 var cheerio = require('cheerio');
+var util = require('util');1
+var rest = require('restler');
 var HTMLFILE_DEFAULT = "index.html";
 var CHECKSFILE_DEFAULT = "checks.json";
 
@@ -36,15 +37,22 @@ var assertFileExists = function(infile) {
     return instr;
 };
 
-var cheerioHtmlFile = function(htmlfile) {
-    return cheerio.load(fs.readFileSync(htmlfile));
+var cheerioHtmlFile = function(htmlfile, type) {
+    if(type == 'file') { 
+	return cheerio.load(fs.readFileSync(htmlfile));
+    }
+    if(type == 'url') {
+	return cheerio.load(htmlfile);
+    }
 };
 
 var loadChecks = function(checksfile) {
-    return JSON.parse(fs.readFileSync(checksfile));
+   return JSON.parse(fs.readFileSync(checksfile));
 };
+
 var checkHtmlFile = function(htmlfile, checksfile) {
-    $ = cheerioHtmlFile(htmlfile);
+    $ = htmlfile
+
     var checks = loadChecks(checksfile).sort();
     var out = {};
     for(var ii in checks) {
@@ -53,6 +61,38 @@ var checkHtmlFile = function(htmlfile, checksfile) {
     }
     return out;
 };
+
+var gradeIt = function(target, checksfile, type) {
+    var content = cheerioHtmlFile(target, type);
+    var checkJson = checkHtmlFile(content, checksfile);
+    var outJson = JSON.stringify(checkJson, null, 4);
+    console.log(outJson);
+}
+
+var callbacker = function(url, checksfile) {
+    var responder = function(result) {
+        if(result instanceof Error) {
+            console.error('Error: ' + util.format(result.message));
+            } else {
+		gradeIt(result, checksfile, 'url');
+            }
+    }
+return responder;
+}
+
+var checkHTML = function(target, checksfile, type) {
+    if(type == 'file') { 
+	gradeIt(program.file, program.checks, 'file');
+    }
+    if(type == 'url') {
+	 processURL(program.url, program.checks);
+    }
+}    
+
+var processURL = function(target, checksfile) {
+    var responder = callbacker(target, checksfile);
+    rest.get(target).on('complete', responder);
+} 
 
 var clone = function(fn) {
     // Workaround for commander.js issue.
@@ -63,11 +103,17 @@ var clone = function(fn) {
 if(require.main == module) {
     program
         .option('-c, --checks <check_file>', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
-        .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
+        .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists))
+        .option('-u, --url <web_address>', 'URL of website')
         .parse(process.argv);
-    var checkJson = checkHtmlFile(program.file, program.checks);
-    var outJson = JSON.stringify(checkJson, null, 4);
-    console.log(outJson);
+    
+    if(program.url) {
+	checkHTML(program.url, program.checks, 'url');   
+    }
+     if(program.file) {
+         checkHTML(program.file, program.checks, 'file');
+    }
 } else {
-    exports.checkHtmlFile = checkHtmlFile;
+    exports.checkHTML = checkHTML;
 }
+
