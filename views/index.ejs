@@ -100,7 +100,7 @@
       div.addthis_toolbox {
       width:180px;
       margin: 0 auto;
-      }
+    
     </style>
     <script type="text/javascript">
       
@@ -115,7 +115,17 @@
       })();
 
 </script>
-  </head>
+
+ <script type="text/javascript">
+              $(document).ready(function () {
+                $("a").tooltip({
+                  'selector': '',
+                  'placement': 'bottom'
+                });
+              });
+            </script>
+
+    </head>
   <body>
 
     <!-- Mobile-friendly navbar adapted from example -->
@@ -133,9 +143,9 @@
 	  <div class="nav-collapse collapse">
 	    <ul class="nav">
 	      <li class="active"><a href="#">Home</a></li>
-	      <li><a href="#about">About</a></li>
+	      <li><a href="#about" data-toggle="tooltip" data-placement="bottom" title="It's about you. ">About</a></li>
 	      <li><a href="/orders">Orders</a></li>
-	      <li><a href="#contact">Contact</a></li>
+	      <li><a href="#contact" data-toggle="tooltip" data-placement="bottom" title="Please don't call us. We'll call you.">Contact</a></li>
 	    </ul>
          </div><!--/.nav-collapse -->
        </div>

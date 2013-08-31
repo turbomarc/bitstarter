@@ -49,6 +49,14 @@
       })();
 
 </script>
+<script type="text/javascript">
+              $(document).ready(function () {
+                $("a").tooltip({
+                  'selector': '',
+                  'placement': 'bottom'
+                });
+              });
+            </script>
   </head>
   <body>
    <!-- Mobile-friendly navbar adapted from example -->
@@ -62,13 +70,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-          <a class="brand" href="#">Bitstarter</a>
+          <a class="brand" href="/">Bitstarter</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li><a href="/">Home</a></li>
-              <li><a href="#about">About</a></li>
+              <li><a href="#about" data-toggle="tooltip" data-placement="bottom" title="It's about you. ">About</a></li>
               <li class="active"><a href="#">Orders</a></li>
-              <li><a href="#contact">Contact</a></li>
+             <li><a href="#contact" data-toggle="tooltip" data-placement="bottom" title="Please don't call us. We'll call you.">Contact</a></li>
             </ul>
          </div><!--/.nav-collapse -->
        </div>
@@ -94,5 +102,15 @@
       </table>
       <a href="/refresh_orders">Refresh orders from coinbase</a>
     </div>
+    <script>
+       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+       ga('create', 'UA-42926258-1', 'crisitunity.com');
+       ga('send', 'pageview');
+
+     </script>
   </body>
 </html>
